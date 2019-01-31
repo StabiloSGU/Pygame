@@ -75,4 +75,3 @@ H = Vector(3, 2)
 H.show()
 V = vectorsum(H, G.mul(-1))
 V.show()
-
