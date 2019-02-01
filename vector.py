@@ -1,6 +1,6 @@
 from math import sqrt
 from math import acos
-
+from math import degrees
 
 class Vector:
     def __init__(self, x=0, y=0):
@@ -28,6 +28,8 @@ class Vector:
         else:
             self.x /= self.length
             self.y /= self.length
+            self.x = round(self.x, 2)
+            self.y = round(self.y, 2)
             self.length = vectorlength(self)
 
     def show(self):
@@ -50,21 +52,17 @@ def vectorlength(vector):
 
 
 def distance(vector1, vector2):
-    return sqrt((vector1.x-vector2.x)**2+(vector1.y-vector2.y)**2)
+    return round(sqrt((vector1.x-vector2.x)**2+(vector1.y-vector2.y)**2), 2)
 
 
-def scalardirection(vector1, vector2):
-    return vector1.x*vector2.x + vector1.y+vector2.y
+def scalarmultiply(vector1, vector2):
+    return round(vector1.x*vector2.x + vector1.y*vector2.y, 2)
 
 
-def scalarangle(vector1, vector2):
-    vector1.normalize()
-    vector2.normalize()
-    len1 = vectorlength(vector1)
-    len2 = vectorlength(vector2)
-    scaldir = scalardirection(vector1, vector2)
-    theta = acos(scaldir/(len1 * len2))
-    return theta
+def anglebetween(vector1, vector2):
+    norm = scalarmultiply(vector1, vector2)
+    radtheta = acos(norm)
+    return round(degrees(radtheta))
 
 
 D = Vector(1, 1)
@@ -75,3 +73,10 @@ H = Vector(3, 2)
 H.show()
 V = vectorsum(H, G.mul(-1))
 V.show()
+print('normal')
+D.normalize()
+D.show()
+V.normalize()
+V.show()
+theta = anglebetween(D, V)
+print(theta)
