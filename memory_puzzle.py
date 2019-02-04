@@ -43,6 +43,72 @@ allshapes = (donut, square, diamond, lines, oval)
 assert len(allcolors) * len(allshapes) *2 >= boardWidth * boardHeight, 'derp you failed'
 
 
+def main():
+    global fpsclock, dispsurf
+    pygame.init()
+    fpsclock = pygame.time.Clock()
+    dispsurf = pygame.display.set_mode((windowWidth, windowHeight))
+
+    mousex = 0
+    mousey = 0
+    pygame.display.set_caption('memory gaem oc pls dont copy')
+
+    mainBoard = getRandomizedBoard()
+    revealedBoxes = generateRevealedBoxesData(False)
+
+    firstSelection = None
+
+    while True:
+        mouseClicked = False
+
+        dispsurf.fill(bgcolor)
+        drawBoard(mainBoard, revealedBoxes)
+
+        for event in pygame.event.get():
+            if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
+                pygame.quit()
+                sys.exit()
+            elif event.type == MOUSEMOTION:
+                mousex, mousey = event.pos
+            elif event.type == MOUSEBUTTONUP:
+                mousex, mousey = event.pos
+                mouseClicked = True
+
+        boxx, boxy = getBoxAtPixel(mousex, mousey)
+        if boxx is not None and boxy is not None:
+            if not revealedBoxes[boxx][boxy]:
+                drawHighlightBox(boxx, boxy)
+            if not revealedBoxes[boxx][boxy] and mouseClicked:
+                revealBoxesAnimation(mainBoard, [(boxx, boxy)])
+                revealedBoxes[boxx][boxy] = True
+                if firstSelection is None:
+                    firstSelection = (boxx, boxy)
+                else:
+                    icon1shape, icon1color = getShapeAndColor(mainBoard, firstSelection[0], firstSelection[1])
+                    icon2shape, icon2color = getShapeAndColor(mainBoard, boxx, boxy)
+
+                    if icon1shape != icon2shape or icon1color != icon2color:
+                        pygame.time.wait(1000)
+                        coverBoxesAnimation(mainBoard, [(firstSelection[0], firstSelection[1]), (boxx, boxy)])
+                        revealedBoxes[firstSelection[0]][firstSelection[1]] = False
+                        revealedBoxes[boxx][boxy] = False
+                    elif hasWon(revealedBoxes):
+                        gameWonAnimation(mainBoard)
+                        pygame.time.wait(2000)
+
+                        mainBoard = getRandomizedBoard()
+                        revealedBoxes = generateRevealedBoxesData(False)
+                        drawBoard(mainBoard, revealedBoxes)
+                        pygame.display.update()
+                        pygame.time.wait(1000)
+
+                        startGameAnimation(mainBoard)
+                    firstSelection = None
+
+        pygame.display.update()
+        fpsclock.tick(fps)
+
+
 def generateRevealedBoxesData(val):
     revealedBoxes = []
     for i in range(boardWidth):
@@ -185,71 +251,6 @@ def hasWon(revealedBoxes):
             return False
     return True
 
-def main():
-    global fpsclock, dispsurf
-    pygame.init()
-    fpsclock = pygame.time.Clock()
-    dispsurf = pygame.display.set_mode((windowWidth, windowHeight))
 
-    mousex = 0
-    mousey = 0
-    pygame.display.set_caption('memory gaem oc pls dont copy')
-
-    mainBoard = getRandomizedBoard()
-    revealedBoxes = generateRevealedBoxesData(False)
-
-    firstSelection = None
-
-    while True:
-        mouseClicked = False
-
-        dispsurf.fill(bgcolor)
-        drawBoard(mainBoard, revealedBoxes)
-
-        for event in pygame.event.get():
-            if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
-                pygame.quit()
-                sys.exit()
-            elif event.type == MOUSEMOTION:
-                mousex, mousey = event.pos
-            elif event.type == MOUSEBUTTONUP:
-                mousex, mousey = event.pos
-                mouseClicked = True
-
-        boxx, boxy = getBoxAtPixel(mousex, mousey)
-        if boxx is not None and boxy is not None:
-            if not revealedBoxes[boxx][boxy]:
-                drawHighlightBox(boxx, boxy)
-            if not revealedBoxes[boxx][boxy] and mouseClicked:
-                revealBoxesAnimation(mainBoard, [(boxx, boxy)])
-                revealedBoxes[boxx][boxy] = True
-                if firstSelection is None:
-                    firstSelection = (boxx, boxy)
-                else:
-                    icon1shape, icon1color = getShapeAndColor(mainBoard, firstSelection[0], firstSelection[1])
-                    icon2shape, icon2color = getShapeAndColor(mainBoard, boxx, boxy)
-
-                    if icon1shape != icon2shape or icon1color != icon2color:
-                        pygame.time.wait(1000)
-                        coverBoxesAnimation(mainBoard, [(firstSelection[0], firstSelection[1]), (boxx, boxy)])
-                        revealedBoxes[firstSelection[0]][firstSelection[1]] = False
-                        revealedBoxes[boxx][boxy] = False
-                    elif hasWon(revealedBoxes):
-                        gameWonAnimation(mainBoard)
-                        pygame.time.wait(2000)
-
-                        mainBoard = getRandomizedBoard()
-                        revealedBoxes = generateRevealedBoxesData(False)
-                        drawBoard(mainBoard, revealedBoxes)
-                        pygame.display.update()
-                        pygame.time.wait(1000)
-
-                        startGameAnimation(mainBoard)
-                    firstSelection = None
-
-        pygame.display.update()
-        fpsclock.tick(fps)
-
-
-#if __name__ == '__main__':
-main()
+if __name__ == '__main__':
+    main()
