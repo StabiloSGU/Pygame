@@ -57,6 +57,12 @@ def main():
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 
+    mousex = 0
+    mousey = 0
+    pygame.display.set_caption('here we go again')
+
+    DISPLAYSURF.fill(BGCOLOR)
+
     # main loop
     while True:
         for event in pygame.event.get():
