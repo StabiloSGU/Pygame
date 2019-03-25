@@ -9,7 +9,7 @@ class Vector:
         self.normalized = False
 
     def __repr__(self):
-        return '2DVector('+str(self.x)+', '+str(self.y)+') and a length of '+str(self.length)
+        return '2DVector('+str(self.x)+', '+str(self.y)+') length of '+str(self.length)
 
     def mul(self, scalar):
         result = Vector(self.x*scalar, self.y*scalar)
